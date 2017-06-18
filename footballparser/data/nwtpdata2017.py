@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 
 '''
-日职赛数据统计2017
+挪威超级联赛数据统计2017
+
+Created on 2017/6/17
+@author: yinlg
 '''
 from footballparser.util.common  import  Client
 import json
 import pandas as pd
 
-class Jppldata(object):
+class Nwtpdata(object):
     
     def __init__(self,year):
         self.year = year
-        self.PATH= "leagueId=33&season=2017&matchType=0"
+        self.PATH= "leagueId=31&season=2017&matchType=0"
     def getData(self):
         i =1 
         round1 = 1
@@ -43,6 +46,9 @@ class Jppldata(object):
             round1 = round1 +  1
         self.df = dfn   
         return dfn
+        
+
+  
     def sumballoneplaystrategy(self,buy):
         
         sum =0 
@@ -57,13 +63,13 @@ class Jppldata(object):
            
         return len(self.finsheddf),sum   
            
-        
-    def sumHostAndGuest(row,col1,col2):
-          return row[col1] + row[col2]  
+    def hostScoreAddawayScore(row,col1,col2):
+        return row[col1] + row[col2]      
+ 
 
        
     '''
-      设定几种投注方式：只投一场比赛，投一注：0，1，2
+      设定几种投注方式：只投一场比赛，投一注：0，1，2,3
       只投一场比赛：投二注：0,1;0,2,1,2
       只投一场比赛：投三注：0，1，2，1，2，3
       假设比分系数为0：8倍；1：4倍；2：3倍；3，3倍
@@ -71,21 +77,26 @@ class Jppldata(object):
     def earnreateBysumoneplaystrategy(self,way): 
         zeropls = 8
         onepls = 4.5
-        twopls =3.5
+        twopls =3
         threepls = 3.5
+        fourpls = 5
         
         susum0 = self.sumballoneplaystrategy([0.0])
         susum1 = self.sumballoneplaystrategy([1.0])  
         susum2 = self.sumballoneplaystrategy([2.0]) 
         susum3 = self.sumballoneplaystrategy([3.0])
+        susum4 = self.sumballoneplaystrategy([4.0])
+        
         
         if way =='one':
   
             resultsum0 = susum0[1]*2*zeropls-susum0[0]*2
             resultsum1 = susum1[1]*2*onepls-susum0[0]*2
             resultsum2 = susum2[1]*2*twopls-susum0[0]*2
+            resultsum3 = susum3[1]*2*threepls-susum0[0]*2
+            resultsum4 = susum4[1]*2*fourpls-susum0[0]*2
 
-            return susum0[0],susum0[0]*2,"0",resultsum0,"1",resultsum1,'2',resultsum2
+            return susum0[0],susum0[0]*2,"0",resultsum0,"1",resultsum1,'2',resultsum2,'3',resultsum3,'4',resultsum4
 
         elif way == 'two':
              
@@ -95,6 +106,7 @@ class Jppldata(object):
              resultsum12 = susum1[1]*2*onepls + susum2[1]*2*twopls -susum0[0]*4
              resultsum13 = susum1[1]*2*onepls + susum3[1]*2*threepls -susum0[0]*4 
              resultsum23 = susum2[1]*2*twopls + susum3[1]*2*threepls -susum0[0]*4 
+
             
              return susum0[0],susum0[0]*4,"01",resultsum01,"02",resultsum02,'03',\
                     resultsum03,'12',resultsum12,'13',resultsum13,'23',resultsum23
@@ -111,30 +123,29 @@ class Jppldata(object):
 
         
 if __name__ == "__main__":
-    data = Jppldata("2017")
+    data = Nwtpdata("2017")
     df = data.getData()
-    
-    
+   # print df
+   
     '''
-(133, 4)
-(133, 34)
-(133, 38)
-(133, 31)
-(133, 11)
------------------
-(133, 38)
-(133, 72)
-(133, 69)
-(133, 103)
-(133, 114)
------------------
-(133, 266, '0', -202, '1', 40.0, '2', 0.0)
-(133, 532, '01', -162.0, '02', -202.0, '03', -251.0, '12', 40.0, '13', -9.0, '23', -49.0)
-(133, 798, '012', -162.0, '123', -9.0)
-   '''
-    
+     -----------------
+     (97, 7)
+     (97, 13)
+     (97, 28)
+     (97, 25)
+     (97, 11)
+     -----------------
+     (97, 20)
+     (97, 41)
+     (97, 53)
+     (97, 66)
+     (97, 77)
+     -----------------
+     (97, 194, '0', -82, '1', -77.0, '2', -26, '3', -19.0, '4', -84)
+     (97, 388, '01', -159.0, '02', -108, '03', -101.0, '12', -103.0, '13', -96.0, '23', -45.0)
+     (97, 582, '012', -185.0, '123', -122.0)
+    '''
     print "-----------------"
-      
     sum0 = data.sumballoneplaystrategy([0.0])
     print sum0
     
@@ -164,7 +175,11 @@ if __name__ == "__main__":
     print sum1234
     
     print "-----------------"
-
+    '''
+      (97, 194, '0', -82, '1', -90, '2', -26)
+      (97, 388, '01', -172, '02', -108, '12', -116)
+      (97, 582, '012', -198, '123', -142)
+    '''
     earn1 =  data.earnreateBysumoneplaystrategy('one')
     print earn1
     earn2 =  data.earnreateBysumoneplaystrategy('two')
