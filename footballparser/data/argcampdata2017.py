@@ -1,20 +1,17 @@
 # -*- coding: utf-8 -*-
 
 '''
-挪威超级联赛数据统计2017
-
-Created on 2017/6/17
-@author: yinlg
+阿根廷甲级赛数据统计2017
 '''
 from footballparser.util.common  import  Client
 import json
 import pandas as pd
 
-class Nwtpdata(object):
+class ArgCampData(object):
     
     def __init__(self,year):
         self.year = year
-        self.PATH= "leagueId=31&season=2017&matchType=0"
+        self.PATH= "leagueId=14&season=2016-2017&matchType=0"
     def getData(self):
         i =1 
         round1 = 1
@@ -33,6 +30,9 @@ class Nwtpdata(object):
             rsp = client.getData(fullpath)
             filterjson =  json.loads(rsp[1])['result']['matchList']
             
+            ##print filterjson
+
+
             if len(filterjson) == 0:
                 break
             
@@ -40,15 +40,13 @@ class Nwtpdata(object):
                      columns=['leagueName','hostTeamId','hostTeamName',\
                      'awayTeamId','awayTeamName','hostScore','awayScore',\
                      'status','winOdds','drawOdds','loseOdds'])
-            #print df
+            ##print df
             dfn = dfn.append(df, ignore_index=True)
   
             round1 = round1 +  1
+        print dfn
         self.df = dfn   
         return dfn
-        
-
-  
     def sumballoneplaystrategy(self,buy):
         
         sum =0 
@@ -63,13 +61,13 @@ class Nwtpdata(object):
            
         return len(self.finsheddf),sum   
            
-    ##def hostScoreAddawayScore(row,col1,col2):
-    ##    return row[col1] + row[col2]      
- 
+        
+    ##def sumHostAndGuest(row,col1,col2):
+     ##     return row[col1] + row[col2]  
 
        
     '''
-      设定几种投注方式：只投一场比赛，投一注：0，1，2,3
+      设定几种投注方式：只投一场比赛，投一注：0，1，2
       只投一场比赛：投二注：0,1;0,2,1,2
       只投一场比赛：投三注：0，1，2，1，2，3
       假设比分系数为0：8倍；1：4倍；2：3倍；3，3倍
@@ -77,26 +75,21 @@ class Nwtpdata(object):
     def earnreateBysumoneplaystrategy(self,way): 
         zeropls = 8
         onepls = 4.5
-        twopls =3
+        twopls =3.5
         threepls = 3.5
-        fourpls = 5
         
         susum0 = self.sumballoneplaystrategy([0.0])
         susum1 = self.sumballoneplaystrategy([1.0])  
         susum2 = self.sumballoneplaystrategy([2.0]) 
         susum3 = self.sumballoneplaystrategy([3.0])
-        susum4 = self.sumballoneplaystrategy([4.0])
-        
         
         if way =='one':
   
             resultsum0 = susum0[1]*2*zeropls-susum0[0]*2
             resultsum1 = susum1[1]*2*onepls-susum0[0]*2
             resultsum2 = susum2[1]*2*twopls-susum0[0]*2
-            resultsum3 = susum3[1]*2*threepls-susum0[0]*2
-            resultsum4 = susum4[1]*2*fourpls-susum0[0]*2
 
-            return susum0[0],susum0[0]*2,"0",resultsum0,"1",resultsum1,'2',resultsum2,'3',resultsum3,'4',resultsum4
+            return susum0[0],susum0[0]*2,"0",resultsum0,"1",resultsum1,'2',resultsum2
 
         elif way == 'two':
              
@@ -106,7 +99,6 @@ class Nwtpdata(object):
              resultsum12 = susum1[1]*2*onepls + susum2[1]*2*twopls -susum0[0]*4
              resultsum13 = susum1[1]*2*onepls + susum3[1]*2*threepls -susum0[0]*4 
              resultsum23 = susum2[1]*2*twopls + susum3[1]*2*threepls -susum0[0]*4 
-
             
              return susum0[0],susum0[0]*4,"01",resultsum01,"02",resultsum02,'03',\
                     resultsum03,'12',resultsum12,'13',resultsum13,'23',resultsum23
@@ -123,29 +115,31 @@ class Nwtpdata(object):
 
         
 if __name__ == "__main__":
-    data = Nwtpdata("2017")
+    data = ArgCampData("2017")
     df = data.getData()
-   # print df
-   
+    #print data
+    
     '''
-     -----------------
-     (97, 7)
-     (97, 13)
-     (97, 28)
-     (97, 25)
-     (97, 11)
-     -----------------
-     (97, 20)
-     (97, 41)
-     (97, 53)
-     (97, 66)
-     (97, 77)
-     -----------------
-     (97, 194, '0', -82, '1', -77.0, '2', -26, '3', -19.0, '4', -84)
-     (97, 388, '01', -159.0, '02', -108, '03', -101.0, '12', -103.0, '13', -96.0, '23', -45.0)
-     (97, 582, '012', -185.0, '123', -122.0)
-    '''
+-----------------
+(73, 6)
+(73, 21)
+(73, 22)
+(73, 8)
+(73, 7)
+-----------------
+(73, 27)
+(73, 43)
+(73, 30)
+(73, 51)
+(73, 58)
+-----------------
+(73, 146, '0', -50, '1', 43.0, '2', 8.0)
+(73, 292, '01', -7.0, '02', -42.0, '03', -140.0, '12', 51.0, '13', -47.0, '23', -82.0)
+(73, 438, '012', 1.0, '123', -39.0)
+'''
+    
     print "-----------------"
+      
     sum0 = data.sumballoneplaystrategy([0.0])
     print sum0
     
@@ -175,17 +169,13 @@ if __name__ == "__main__":
     print sum1234
     
     print "-----------------"
-    '''
-      (97, 194, '0', -82, '1', -90, '2', -26)
-      (97, 388, '01', -172, '02', -108, '12', -116)
-      (97, 582, '012', -198, '123', -142)
-    '''
+
     earn1 =  data.earnreateBysumoneplaystrategy('one')
     print earn1
     earn2 =  data.earnreateBysumoneplaystrategy('two')
     print earn2
     earn3 =  data.earnreateBysumoneplaystrategy('three')
     print earn3
-    
+ 
     
     

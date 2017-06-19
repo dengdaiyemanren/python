@@ -25,7 +25,7 @@ class BraxiCampData(object):
         while i>0:
             
             fullpath = self.PATH + "&round=" +str(round1)
-            #print fullpath
+            print fullpath
 
             rsp = client.getData(fullpath)
             filterjson =  json.loads(rsp[1])['result']['matchList']
@@ -58,8 +58,8 @@ class BraxiCampData(object):
         return len(self.finsheddf),sum   
            
         
-    def sumHostAndGuest(row,col1,col2):
-          return row[col1] + row[col2]  
+    ##def sumHostAndGuest(row,col1,col2):
+     ##     return row[col1] + row[col2]  
 
        
     '''

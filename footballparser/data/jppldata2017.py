@@ -7,6 +7,9 @@ from footballparser.util.common  import  Client
 import json
 import pandas as pd
 
+def sumHostAndGuest(row,col1,col2):
+          return row[col1] + row[col2] 
+
 class Jppldata(object):
     
     def __init__(self,year):
@@ -43,6 +46,10 @@ class Jppldata(object):
             round1 = round1 +  1
         self.df = dfn   
         return dfn
+        
+        
+ 
+    
     def sumballoneplaystrategy(self,buy):
         
         sum =0 
@@ -58,8 +65,7 @@ class Jppldata(object):
         return len(self.finsheddf),sum   
            
         
-    def sumHostAndGuest(row,col1,col2):
-          return row[col1] + row[col2]  
+
 
        
     '''
