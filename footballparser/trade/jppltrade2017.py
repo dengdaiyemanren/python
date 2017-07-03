@@ -2,6 +2,7 @@
 
 from footballparser.util.sqliteclient import SqliteCilent
 from footballparser.data.jppldata2017 import Jppldata
+#from footballparser.util.__encode__ import encodeTupleList
 
 '''
 1、历史数据记录
@@ -25,10 +26,11 @@ class Jppltrade(object):
     def histToDb(self):
         self.sqlclient.dropTable("jppldata2017")
         self.sqlclient.createTableWithDf(self.jppldata.getData(),self.__TableName__)
-    def pickyourfuck(self,row):
-        
-        self.sqlclient.insertOneRow(self.__TradeTableName__,row)
+    def insertRows(self,rows_dictList):
+        self.sqlclient.insertMany(self.__TradeTableName__,rows_dictList)
     
+        
+        
     def __del__(self):
         self.sqlclient.__del__()
     
@@ -36,7 +38,28 @@ class Jppltrade(object):
 
 if __name__ == "__main__":  
      jppltrade =  Jppltrade()
-     row = ['1','2',7]   
+     row = {}   
+     sqlclient = SqliteCilent()
+     dictCond ={"hostTeamId":230}
+     result = sqlclient.query("jppldata2017",dictCond)
+     
+     for ii in result:
+        print ii
+     
+     ### insert demo begin
+     insertDictList =  [{"leagueName":"111"},{"leagueName":"222"}]  
+     sqlclient1 = SqliteCilent()                   
+     sqlclient1.insertMany("jppldata2017_trade",insertDictList)                    
+     ### insert demo end  
+     
+     
+     
+    ## 
+     tuplelist =([111,222],[33,55])
+     
+     ##for tupleone in tuplelist:
+       ##  print tupleone
+     
      #jppltrade.pickyourfuck(row)
      ##jppltrade.histToDb()
      ##jppltrade.createTradeTable()
