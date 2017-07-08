@@ -9,7 +9,7 @@ from footballparser.util.__error__ import NotSupportParamError
 #conn = sqlite3.connect('test.db')
 #print "Opened database successfully";
 
-class SqliteCilent(object):
+class SimpleSqliteCilent(object):
     def __init__(self):
         self.con = SimpleSQLite("pandas_df.sqlite")
     def createTableWithDf(self,dataframe,tableName):
@@ -24,17 +24,17 @@ class SqliteCilent(object):
         self.con.insert(tableName,columns)
         
     """
-       ·µ»ØµÄÊÇtupleĞÎÊ½µÄ½á¹û
+       è¿”å›çš„æ˜¯tupleå½¢å¼çš„ç»“æœ
     """
-    def query(self,tableName,whereDict):
+    def query(self,tableName,whereDict,operation="=",extra=None):
         print len(whereDict.keys())
         print "---------------"
         if len(whereDict.keys()) != 1:
             raise NotSupportParamError()
         return self.con.select(select="*", table_name=tableName,\
-                 where=SqlQuery.make_where(key=whereDict.keys()[0], value=whereDict[whereDict.keys()[0]])).fetchall()
+                 where=SqlQuery.make_where(key=whereDict.keys()[0], value=whereDict[whereDict.keys()[0]],operation=operation),extra=extra).fetchall()
     """
-      ¸ù¾İwhereÌõ¼ş¸üĞÂ
+      æ ¹æ®whereæ¡ä»¶æ›´æ–°,ç›®å‰ä»…æ”¯æŒ1ä¸ªæ¡ä»¶
     """
     def update(self,tableName,set_queryDict,whereDict):
           print len(whereDict.keys())
@@ -51,7 +51,7 @@ class SqliteCilent(object):
                                      value=whereDict[whereDict.keys()[0]])).fetchall()
     
     """
-     ²åÈë×ÖµäÖµĞÎÊ½µÄ¼ÇÂ¼
+     æ’å…¥å­—å…¸å€¼å½¢å¼çš„è®°å½•
     """
     def insertMany(self,tableName,inert_dictList):
          self.con.insert_many(tableName,inert_dictList)
@@ -60,10 +60,11 @@ class SqliteCilent(object):
     def __del__( self ):
         if self.con is not None:
             self.con.close()
+            
         
 if __name__ == "__main__":
    
-    sqlClient = SqliteCilent()
+    sqlClient = SimpleSqliteCilent()
    ## colums = ['a','b','c']
     ##sqlClient.createTableWithList("test",colums)
     ##sqlClient.insertOneRow("test",colums)

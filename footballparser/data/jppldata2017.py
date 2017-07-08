@@ -20,7 +20,7 @@ class Jppldata(object):
         round1 = 1
     
         client = Client()
-        dfn = pd.DataFrame(columns=['leagueName','hostTeamId','hostTeamName',\
+        dfn = pd.DataFrame(columns=['matchTimeStr','leagueName','hostTeamId','hostTeamName',\
                      'awayTeamId','awayTeamName','hostScore','awayScore',\
                      'status','winOdds','drawOdds','loseOdds'])
         ##print dfn
@@ -37,7 +37,7 @@ class Jppldata(object):
                 break
             
             df = pd.DataFrame(filterjson,\
-                     columns=['leagueName','hostTeamId','hostTeamName',\
+                     columns=['matchTimeStr','leagueName','hostTeamId','hostTeamName',\
                      'awayTeamId','awayTeamName','hostScore','awayScore',\
                      'status','winOdds','drawOdds','loseOdds'])
             #print df
